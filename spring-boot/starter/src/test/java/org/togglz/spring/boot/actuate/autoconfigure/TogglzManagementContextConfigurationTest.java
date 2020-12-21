@@ -17,7 +17,7 @@
 package org.togglz.spring.boot.actuate.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 
@@ -36,7 +36,7 @@ import org.togglz.spring.boot.actuate.BaseTest;
 public class TogglzManagementContextConfigurationTest extends BaseTest {
 
     @Test
-    public void consoleWithCustomManagementContextPath() {
+    void consoleWithCustomManagementContextPath() {
         // With TogglzManagementContextConfiguration responsible for creating the admin console servlet registration bean,
         // if a custom managememnt context path is provided it should be used as prefix.
         contextRunnerWithFeatureProviderConfig()
@@ -47,7 +47,7 @@ public class TogglzManagementContextConfigurationTest extends BaseTest {
     }
 
     @Test
-    public void customConsolePath() {
+    void customConsolePath() {
         contextRunnerWithFeatureProviderConfig()
             .withPropertyValues("togglz.console.path: /custom")
             .run((context) -> {
@@ -56,7 +56,7 @@ public class TogglzManagementContextConfigurationTest extends BaseTest {
     }
 
     @Test
-    public void customConsolePathWithTrailingSlash() {
+    void customConsolePathWithTrailingSlash() {
         contextRunnerWithFeatureProviderConfig()
             .withPropertyValues("togglz.console.path: /custom/")
             .run((context) -> {

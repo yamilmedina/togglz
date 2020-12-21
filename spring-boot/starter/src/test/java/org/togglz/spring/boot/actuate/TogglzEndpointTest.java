@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TogglzEndpointTest extends BaseTest {
 
     @Test
-    public void getAllFeatures() {
+    void getAllFeatures() {
         contextRunner.withConfiguration(AutoConfigurations.of(
                 DispatcherServletPathConfig.class,
                 TogglzAutoConfiguration.class,
@@ -73,7 +73,7 @@ public class TogglzEndpointTest extends BaseTest {
     }
 
     @Test
-    public void shouldEnableAFeature() {
+    void shouldEnableAFeature() {
         contextRunner.withConfiguration(AutoConfigurations.of(
                 DispatcherServletPathConfig.class,
                 TogglzAutoConfiguration.class,
@@ -94,7 +94,7 @@ public class TogglzEndpointTest extends BaseTest {
     }
 
     @Test
-    public void shouldDisableAFeature() {
+    void shouldDisableAFeature() {
         contextRunner.withConfiguration(AutoConfigurations.of(
                 DispatcherServletPathConfig.class,
                 TogglzAutoConfiguration.class,
@@ -115,7 +115,7 @@ public class TogglzEndpointTest extends BaseTest {
     }
 
     @Test
-    public void shouldThrowAnIllegalArgumentExceptionIfTheFeatureDoesNotExist() {
+    void shouldThrowAnIllegalArgumentExceptionIfTheFeatureDoesNotExist() {
         contextRunner.withConfiguration(AutoConfigurations.of(
                 DispatcherServletPathConfig.class,
                 TogglzAutoConfiguration.class,
@@ -133,7 +133,7 @@ public class TogglzEndpointTest extends BaseTest {
     }
 
     @Test
-    public void endpointDisabled() {
+    void endpointDisabled() {
         contextRunnerWithFeatureProviderConfig()
             .withPropertyValues(
                     "management.endpoint.togglz.enabled: true")
