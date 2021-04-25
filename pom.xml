@@ -158,6 +158,7 @@
     <module>slack</module>
     <module>redis</module>
     <module>kotlin</module>
+    <module>remote-config</module>
   </modules>
 
   <developers>
