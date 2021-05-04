@@ -7,34 +7,22 @@ import com.google.firebase.remoteconfig.Template;
 import org.togglz.core.Feature;
 import org.togglz.core.repository.FeatureState;
 import org.togglz.core.repository.StateRepository;
+import org.togglz.core.repository.cache.CachingStateRepository;
 import org.togglz.core.util.Preconditions;
 
-import java.io.Serializable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 
 public class FirebaseRemoteConfigStateRepository implements StateRepository {
 
     private final FirebaseRemoteConfig firebaseRemoteConfig;
-    private final ConcurrentMap<String, FeatureState> states;
 
     private FirebaseRemoteConfigStateRepository(Builder builder) {
-        states = new ConcurrentHashMap<>();
         firebaseRemoteConfig = builder.firebaseRemoteConfig;
     }
 
     @Override
     public FeatureState getFeatureState(Feature feature) {
-        if (states.get(feature.name()) != null) {
-            return states.get(feature.name());
-        }
-
-        FeatureState featureState = getFeatureStateFromFirebase(feature);
-        if (featureState != null) {
-            states.put(feature.name(), featureState);
-        }
-        return featureState;
+        return getFeatureStateFromFirebase(feature);
     }
 
     private FeatureState getFeatureStateFromFirebase(Feature feature) {
@@ -83,6 +71,7 @@ public class FirebaseRemoteConfigStateRepository implements StateRepository {
     public static class Builder {
 
         private final FirebaseRemoteConfig firebaseRemoteConfig;
+        public static final long DEFAULT_TTL_12_HOURS_MS = 43_200_000L;
 
         /**
          * Creates a new builder for a {@link FirebaseRemoteConfigStateRepository}.
@@ -96,31 +85,23 @@ public class FirebaseRemoteConfigStateRepository implements StateRepository {
         /**
          * Creates a new {@link FirebaseRemoteConfigStateRepository} using the current pre-initialized Firebase client.
          */
-        public FirebaseRemoteConfigStateRepository build() {
+        private FirebaseRemoteConfigStateRepository buildStateRepository() {
             Preconditions.checkArgument(firebaseRemoteConfig != null,
                     "FirebaseRemoteConfig is null, make sure FirebaseApp is initialized");
             return new FirebaseRemoteConfigStateRepository(this);
         }
-    }
 
-    /**
-     * This class represents a cached repository lookup
-     * <p>
-     * Note: based on {@link org.togglz.core.repository.cache.CachingStateRepository}
-     * TODO: consider use the class above and delegate through this impl
-     */
-    private static class CacheEntry implements Serializable {
-
-        private final FeatureState state;
-
-        public CacheEntry(FeatureState state) {
-            this.state = state;
+        /**
+         * Creates a new {@link FirebaseRemoteConfigStateRepository} wrapped under a {@link CachingStateRepository}.
+         * This enforces an efficient usage for the project avoiding throttling.
+         *
+         * @param ttl time to live for the cached strategy
+         */
+        public CachingStateRepository build(long ttl) {
+            Preconditions.checkArgument(ttl > DEFAULT_TTL_12_HOURS_MS,
+                    "The Firebase suggested min. time to cached the values is 12 hours");
+            return new CachingStateRepository(buildStateRepository(), ttl);
         }
-
-        public FeatureState getState() {
-            return state;
-        }
-
     }
 
 }
